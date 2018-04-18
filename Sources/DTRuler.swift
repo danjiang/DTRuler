@@ -545,7 +545,7 @@ class RulerBlock: UIView {
     
     // Draw label
     
-    let attributes = [NSFontAttributeName: UIFont.systemFont(ofSize: 18, weight: UIFontWeightRegular), NSForegroundColorAttributeName: DTRuler.theme.labelColor]
+    let attributes = [NSAttributedStringKey.font: UIFont.systemFont(ofSize: 18, weight: .regular), NSAttributedStringKey.foregroundColor: DTRuler.theme.labelColor]
     let attributedLabel = NSAttributedString(string: label, attributes: attributes)
     let size = attributedLabel.size()
     attributedLabel.draw(in: CGRect(x: startX - size.width / 2, y: startY + frame.size.height * 0.46875 + 4, width: size.width, height: size.height))
