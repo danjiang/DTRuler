@@ -119,7 +119,21 @@ public class DTRuler: UIView {
       case .integer(let i):
         return "\(i)"
       case .float(let f):
-        return String(format: "%.0f", f)
+        let floatDivision = f/12
+        let isFoot = floor(floatDivision) == floatDivision // true
+        if (isFoot) {
+            return String(format: "%0.f\r%0.fF", f, floatDivision)
+        }
+        else {
+            if f > 12 {
+                var remainder = f
+                while (remainder > 12) {
+                    remainder = remainder - 12
+                }
+                return String(format: "%0.f\r%0.f", f, remainder)
+            }
+            return String(format: "%.0f", f)
+        }
       }
     }
     
@@ -431,7 +445,7 @@ class Ruler: UIScrollView, UIScrollViewDelegate {
             case .integer(let i):
               minorScale = .integer(i + (j - 5))
             case .float(let f):
-              minorScale = .float(f + Float(j - 5) * 0.1)
+              minorScale = .float(f + Float(j - 4) * 0.125)
             }
             // point to minor scale without offset
             if (revise) {
@@ -516,8 +530,8 @@ class RulerPointer: UIView {
 class RulerBlock: UIView {
   
   static let width: CGFloat = 100
-  static let height: CGFloat = 59
-  static let gap: CGFloat = 10
+  static let height: CGFloat = 89
+  static let gap: CGFloat = 12.5
 
   var label: String {
     didSet {
@@ -545,7 +559,7 @@ class RulerBlock: UIView {
     
     // Draw label
     
-    let attributes = [NSFontAttributeName: UIFont.systemFont(ofSize: 18, weight: UIFontWeightRegular), NSForegroundColorAttributeName: DTRuler.theme.labelColor]
+    let attributes = [NSAttributedStringKey.font: UIFont.systemFont(ofSize: 18, weight: .regular), NSAttributedStringKey.foregroundColor: DTRuler.theme.labelColor]
     let attributedLabel = NSAttributedString(string: label, attributes: attributes)
     let size = attributedLabel.size()
     attributedLabel.draw(in: CGRect(x: startX - size.width / 2, y: startY + frame.size.height * 0.46875 + 4, width: size.width, height: size.height))
@@ -564,21 +578,33 @@ class RulerBlock: UIView {
     DTRuler.theme.minorScaleColor.setStroke()
 
     drawMinorScalesFromMidToEgde(with: startX, startY: startY, counter: 4, plus: true, context: context)
-    drawMinorScalesFromMidToEgde(with: startX, startY: startY, counter: 5, plus: false, context: context)
+    drawMinorScalesFromMidToEgde(with: startX, startY: startY, counter: 4, plus: false, context: context)
   }
   
-  private func drawMinorScalesFromMidToEgde(with startX: CGFloat, startY: CGFloat, counter: Int, plus: Bool, context: CGContext) {
-    context.setLineWidth(1)
-    var x = startX
-    for _ in 0..<counter {
-      if plus {
-        x += RulerBlock.gap
-      } else {
-        x -= RulerBlock.gap
-      }
-      context.move(to: CGPoint(x: x, y: startY))
-      context.addLine(to: CGPoint(x: x, y: frame.size.height * 0.3125))
-      context.drawPath(using: .stroke)
+    private func drawMinorScalesFromMidToEgde(with startX: CGFloat, startY: CGFloat, counter: Int, plus: Bool, context: CGContext) {
+        
+        context.setLineWidth(1)
+        var x = startX
+        for i in 0..<counter {
+            if plus {
+                x += RulerBlock.gap
+            } else {
+                x -= RulerBlock.gap
+            }
+            context.move(to: CGPoint(x: x, y: startY))
+            if i == 3 {
+                context.addLine(to: CGPoint(x: x, y: frame.size.height * 0.4125))
+            }
+            else if i == 1 {
+                context.addLine(to: CGPoint(x: x, y: frame.size.height * 0.3525))
+            }
+            else{
+                context.addLine(to: CGPoint(x: x, y: frame.size.height * 0.3125))
+            }
+            context.drawPath(using: .stroke)
+        
+        
+        
     }
   }
   
